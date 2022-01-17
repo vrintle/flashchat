@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="A cool thing made with Node" />
+
+    <title>Join the 🗲 chat!</title>
+	  <link rel="icon" type="text/css" href="https://i.ya-webdesign.com/images/lightning-arrow-png-4.png">
+    <link rel="stylesheet" type="text/css" href="/style.css">
+	  <link rel="stylesheet" type="text/css" href="/m-style.css" media="screen and (max-device-width: 500px), screen and (max-width: 500px)">
+    <!-- <link rel="prefetch" href="https://i.gifer.com/YCZH.gif">
+    <link rel="shortcut icon" href="https://statics.goorm.io/ide/site/lib/favicon-32.png"> -->
+    <script type="text/javascript" src="/vue.min.js"></script>
+  </head>
+
+  <body>
+    <div id="index">
+      <sup><label>Your Username:</label></sup><br>
+      <input type="username" v-model="name" placeholder="a-z only; 4-15 chars" @input="backendErr = ''"><br><br>
+      <input type="checkbox" id="register" v-model="newUser">
+      <label for="register">New? Check the box to register</label><br>
+      <sub><b>Note that</b>, your username once created can't be changed later. <a href="/info">Take the tour</a> for more details.</sub><br><br>
+
+      <button v-bind:disabled="(names.some(n => n.name == name) && newUser) || !rName.test(name)" v-on:click="doAuth">Join</button> the live chat.
+      <sub>
+        <div class="err" v-if="names.some(n => n.name == name) && newUser">This username is already taken.</div>
+        <div class="err" v-if="!rName.test(name)">Username doesn't matches the specified criteria.</div>
+        <div class="err">{{ backendErr }}</div>
+      </sub>
+    </div>
+
+    <script src="/index.js"></script>
+  </body>
+</html>
+
+<!-- https://66.media.tumblr.com/tumblr_m0v7zqEX2l1r03eaxo1_r1_500.gif -->
