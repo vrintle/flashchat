@@ -1,0 +1,39 @@
+.only-pc {
+	display: none;
+}
+.only-m {
+	display: initial;
+}
+
+/* live styles */
+#live-chats {
+	display: block;
+}
+#live-chats > * {
+	margin: 0;
+	max-width: 100%;
+	padding: 10px;
+}
+#chat-details, #new-chat {
+	background-color: #fff;
+}
+#chat-details {
+	top: 0;
+	border-bottom: 2px solid #ccc;
+}
+#new-chat {
+	bottom: 0;
+	border-top: 2px solid #ccc;
+}
+.online-users {
+	white-space: nowrap;
+	overflow-x: scroll;
+	overflow-y: hidden;
+}
+.online-list {
+	display: inline-block;
+	margin-right: 8px;
+}
+.notifs-ctn {
+	max-height: 20vh;
+}
