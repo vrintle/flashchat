@@ -1,0 +1,149 @@
+body {
+	box-sizing: border-box;
+	font-family: /*'lucida fax',*/ arial;
+	word-wrap: break-word;
+	margin: 0;
+}
+html {
+	scroll-behavior: smooth;
+}
+hr {
+	border: none;
+	height: 1px;
+	color: #ccc;
+	background-color: #ccc;
+}
+a[href] {
+	color: #08f;
+	text-decoration: none;
+}
+button {
+	outline: none;
+	background: transparent;
+	color: #f25;
+	border: none;
+	cursor: pointer;
+	font: 500 16px arial;
+	padding: 0;
+}
+button[disabled] {
+	color: #999;
+}
+sup button, sub button {
+	font-size: 13px;
+	font-stretch: ultra-expanded; 
+}
+blockquote {
+	margin: 4px 9px 9px 0;
+	padding: 4px 7px;
+	border-left: 4px solid #999;
+	background-color: #eee9;
+}
+.only-m {
+	display: none;
+}
+.faded {
+	color: #999;
+}
+.center-text {
+	text-align: center;
+}
+
+/* index styles */
+#index {
+	margin: 8px;
+}
+.err {
+	color: #f72;
+}
+
+/* live styles */
+#live-chats {
+	display: flex;
+	flex: row wrap;
+	justify-content: space-around;
+}
+#chat-details, #new-chat {
+	position: sticky;
+	position: -moz-sticky;
+	top: 12px;
+	align-self: flex-start;
+}
+#live-chats > * {
+	margin: 10px;
+	flex: 0 0 auto;
+}
+#chat-details {
+	max-width: 20%;
+	min-width: 15%;
+}
+#all-chats {
+	max-width: 40%;
+	min-width: 35%;
+}
+#new-chat {
+	max-width: 30%;
+	min-width: 25%;
+}
+.online-users {
+	max-height: 27vh;
+	overflow-y: scroll;
+}
+.online-list {
+	color: #4bbb0c;
+	list-style: none;
+}
+.notifs-ctn, .logs-ctn {
+	max-height: 30vh;
+	overflow-y: scroll;
+	text-overflow: ellipsis;
+}
+.notifs {
+	color: #4bbb0c;
+}
+.notifs blockquote {
+	overflow-x: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+div.chat-box {
+	border: 2px solid #eee;
+	border-radius: 7px;
+	padding: 12px;
+	margin: 7px 0;
+}
+.spot-light {
+	background: #eee9;
+}
+textarea {
+	display: block;
+	margin: 0 auto;
+	width: 97%;
+	resize: none;
+	font: 500 14px consolas;
+	padding: 4px;
+}
+img.chat-image {
+	max-width: 100%;
+}
+.typing {
+	position: fixed;
+	width: 100%;
+	bottom: 12px;
+	left: 0;
+	text-align: center;
+}
+.typing sub {
+	background: #777;
+	color: #fff;
+	border-radius: 20px;
+	padding: 4px 12px;
+}
+
+/* users styles */
+#users {
+	padding: 8px;
+}
+.trusted-name {
+	color: violet;
+}
