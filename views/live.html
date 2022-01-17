@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="A cool thing made with Node" />
+
+    <title>You are live</title>
+	  <link rel="icon" type="text/css" href="https://i.ya-webdesign.com/images/lightning-arrow-png-4.png">
+    <link rel="stylesheet" type="text/css" href="/style.css">
+    <link rel="stylesheet" type="text/css" href="/m-style.css" media="screen and (max-device-width: 500px), screen and (max-width: 500px)">
+    <!-- <link rel="prefetch" href="https://i.gifer.com/YCZH.gif">
+    <link rel="shortcut icon" href="https://statics.goorm.io/ide/site/lib/favicon-32.png"> -->
+    <script type="text/javascript" src="/vue.min.js"></script>
+    <script type="text/javascript" src="/socket.io.js"></script>
+  </head>
+
+  <body>
+    <div id="live-chats">
+      <div id="chat-details">
+        You are <b>{{ name }}</b>
+        <br class="only-pc">
+        <br class="only-pc">
+        <span class="only-m faded">&nbsp;•&nbsp;</span>
+
+        <sup><a href="/info" class="only-pc">about</a>
+        <span class="only-pc faded"> this chat</span></sup>
+        <a href="/info" class="only-m">❓</a>
+
+        <hr class="only-pc">
+        <span class="only-m faded">&nbsp;•&nbsp;</span>
+
+        <button @click="() => { if(notifsOpened = !notifsOpened) getNotifs(); }" class="only-pc">Notifications</button>
+        <button @click="() => { if(notifsOpened = !notifsOpened) getNotifs(); }" class="only-m">✉️ <!-- 📩 --></button>
+
+        <span class="only-m faded">&nbsp;•&nbsp;</span>
+        <span class="only-pc faded"> or </span>
+
+        <button @click="() => { if(logsOpened = !logsOpened) getNotifs(); }" class="only-pc">Chat logs</button>
+        <button @click="() => { if(logsOpened = !logsOpened) getNotifs(); }" class="only-m">📃</button>
+        <br class="only-pc">
+        
+        <div v-if="notifsOpened"><hr>
+          <div class="notifs-ctn">
+            <sub v-for="notif in notifs" class="notifs">
+              {{ notif.name }} replied you
+              <a v-bind:href="doc.querySelector(`#c${notif.time} .chat-text`) ? '#c'+notif.time : null" @click="spotChat('#c'+notif.time)">
+                <blockquote>{{ doc.querySelector(`#c${notif.time} .chat-text`) ? doc.querySelector(`#c${notif.time} .chat-text`).innerText : 'in older chats' }}</blockquote>
+              </a>
+            </sub>
+          </div><hr>
+        </div>
+        
+        <div v-if="logsOpened"><hr>
+          <div class="logs-ctn">
+            <div v-for="log in chatLogs" class="logs">
+              <code><b>{{ new Date(log.time).toLocaleTimeString() }}</b> {{ log.text }}</code>
+            </div>
+          </div><hr>
+        </div>
+        <br class="only-pc">
+        <hr class="only-pc">
+
+        <div class="online-users">
+          <span class="only-pc"><b>{{ new Set(onlineUsers).size }}</b> user(s) online:</span>
+          <br class="only-pc">
+          <br class="only-pc">
+          <li v-for="name in new Set(onlineUsers)" class="online-list">• {{ name }}</li>
+        </div>
+        <hr class="only-pc">
+        <br class="only-pc">
+      </div>
+      
+      <div id="all-chats">
+        <button v-on:click="getChats" v-bind:disabled="zeroAge">Load</button> older chats
+        <p>
+          <input type="text" id="chatQuery" v-model="chatQuery" placeholder='search "chat" or [name]'><br>
+          <sub>
+            <input type="checkbox" id="favOnly" v-model="favOnly">
+            <label for="favOnly" class="faded">show only favorite chats</label>
+          </sub>
+        </p>
+
+        <div v-for="chat in chats" v-bind:id="'c' + chat.time" class="chat-box" v-if='(favOnly ? favs.includes(chat.time) : true) && filterChats(chat)'>
+          <a v-bind:href="'/users?u=' + chat.name" class="chat-name">{{ chat.name == name ? 'You' : chat.name }}</a><hr>
+          <p v-html="chat.text" class="chat-text"></p>
+          <sup class="faded">
+            <span v-if="+chat.replyTo">Replied to chat-id: <a v-bind:href="'#c' + chat.replyTo" @click="function(evt) { spotChat(evt.target.innerText); }">#c{{ chat.replyTo }}</a><br></span>
+            <button v-bind:disabled="!!chat.flagged.length || name == chat.name" @click="flagChat">{{ !chat.flagged.length ? 'flag' : 'flagged' }}</button>&nbsp;
+            <span v-if="name == chat.name"><button @click="deleteChat">delete</button>&nbsp;</span>
+            <button @click="evt => { replyTo = evt.target.closest('.chat-box').id; spotChat('#'+replyTo); }">reply</button>&nbsp;
+            <label v-bind:for="'f' + chat.time">add to fav</label>
+            <input type="checkbox" v-bind:id="'f' + chat.time" @input="toggleFav" v-bind:checked="favs.includes(chat.time)">
+          </sup>
+        </div>
+      </div>
+
+      <div id="new-chat">
+        <div class="only-pc">
+          <div class="center-text"><sup class="faded only-m">
+            <button @click="() => compose = !compose">Minimize</button> writing tools
+          </sup></div>
+          <textarea v-model="text" placeholder="Your text goes here..." rows="6" @input="socket.emit('typing', SECRET)"></textarea>
+          <sub><input type="checkbox" v-model="isImage" id="is-image">
+          <label for="is-image">an image url?</label></sub>
+          <br><br>
+
+          <sup class="faded">
+            {{ !replyTo ? `To reply, click` : `Replying to chat-id: ` }}
+            <button v-if="!replyTo">reply</button>
+            <a v-bind:href="'#' + replyTo" v-if="replyTo" @click="function(evt) { spotChat(evt.target.innerText); }">{{ '#' + replyTo }}</a>
+            <button v-if="replyTo" @click="evt => replyTo = ''">reset</button>
+          </sup><br>
+
+          <div class="typing" v-if="typist.length">
+            <sub>{{ typist }} is typing...</sub>
+          </div>
+
+          <button v-on:click="addChat" v-bind:disabled="!text.trim() || disabled">Send</button> chat or maybe <button v-on:click="logOut">log out</button>
+        </div>
+        
+        <div class="only-m">
+          <div v-if="compose">
+            <div class="center-text"><sup class="faded only-m">
+              <button @click="() => compose = !compose">Minimize</button> writing tools
+            </sup></div>
+            <textarea v-model="text" placeholder="Your text goes here..." rows="6" @input="socket.emit('typing', SECRET)"></textarea>
+            <sub><input type="checkbox" v-model="isImage" id="is-image">
+            <label for="is-image">an image url?</label></sub>
+            <br><br>
+
+            <sup class="faded">
+              {{ !replyTo ? `To reply, click` : `Replying to chat-id: ` }}
+              <button v-if="!replyTo">reply</button>
+              <a v-bind:href="'#' + replyTo" v-if="replyTo" @click="function(evt) { spotChat(evt.target.innerText); }">{{ '#' + replyTo }}</a>
+              <button v-if="replyTo" @click="evt => replyTo = ''">reset</button>
+            </sup><br>
+
+            <div class="typing" v-if="typist.length">
+              <sub>{{ typist }} is typing...</sub>
+            </div>
+
+            <button v-on:click="addChat" v-bind:disabled="!text.trim() || disabled">Send</button> chat or maybe <button v-on:click="logOut">log out</button>
+          </div>
+
+          <div class="center-text"><sup class="faded only-m" v-if="!compose">
+            <button @click="() => compose = !compose">Expand</button> writing tools
+          </sup></div>
+        </div>
+      </div>
+    </div>
+
+    <script src="/live.js"></script>
+  </body>
+</html>
+
+<!-- https://66.media.tumblr.com/tumblr_m0v7zqEX2l1r03eaxo1_r1_500.gif -->
