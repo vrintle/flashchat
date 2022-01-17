@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="A cool thing made with Node" />
+
+    <title>Users list</title>
+	  <link rel="icon" type="text/css" href="https://i.ya-webdesign.com/images/lightning-arrow-png-4.png">
+    <link rel="stylesheet" type="text/css" href="/style.css">
+	  <link rel="stylesheet" type="text/css" href="/m-style.css" media="screen and (max-device-width: 500px), screen and (max-width: 500px)">
+    <!-- <link rel="prefetch" href="https://i.gifer.com/YCZH.gif">
+    <link rel="shortcut icon" href="https://statics.goorm.io/ide/site/lib/favicon-32.png"> -->
+    <script type="text/javascript" src="/vue.min.js"></script>
+  </head>
+
+  <body>
+    <div id="users">
+      <input type="text" v-model="key">
+      <p v-for="user in users" v-if="user.name.includes(key)">
+        <b v-bind:class="user.isAdmin || user.isMod ? 'trusted-name' : ''">{{ user.name == name ? 'You' : user.name }}</b> {{ user.isAdmin ? '♦' : '' }} {{ user.name == name ? 'were' : 'was' }} last seen
+        <b>{{ new Date(user.seen).toLocaleString() }}</b>
+        <br>
+        <i>Flags</i> <b>{{ user.flags }}</b> helpful (<b>{{ user.actvFlags }}</b> active)
+        <br>
+        <i>Responses</i> <b>{{ user.resp }}</b> time(s) {{ user.name == name ? 'you' : 'they' }} have been replied
+      </p>
+    </div>
+
+    <script src="/users.js"></script>
+  </body>
+</html>
+
+<!-- https://66.media.tumblr.com/tumblr_m0v7zqEX2l1r03eaxo1_r1_500.gif -->
